@@ -1,0 +1,14 @@
+Package: changepointSelect
+Type: Package
+Title: Automated Selection of Changepoints using Empirical P-Values and Trimming
+Version: 0.1.0
+Author: Matthew Quinn <mjq522@g.harvard.edu>
+Maintainer: Matthew Quinn <mjq522@g.harvard.edu>
+Description: Uses an empirical p-value process to select the optimal set of changepoints among those suggested by running CROPS on PELT. Also performs a trimming process to remove false positives that arise due to linear trends and seasonal patterns.
+Depends:
+    changepoint,
+    doParallel,
+    caTools
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
