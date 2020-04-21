@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3714309349",
+    "hash" : "1969159615",
     "id" : "19F59DD6",
-    "lastKnownWriteTime" : 1586053215,
-    "last_content_update" : 1586053215703,
+    "lastKnownWriteTime" : 1587240579,
+    "last_content_update" : 1587240579780,
     "path" : "C:/Matt Work/Harvard/Mobile Health Project/R Package/changepointSelect/DESCRIPTION",
     "project_path" : "DESCRIPTION",
     "properties" : {
-        "cursorPosition" : "14,0",
+        "cursorPosition" : "16,0",
         "scrollLine" : "0"
     },
     "read_only" : false,

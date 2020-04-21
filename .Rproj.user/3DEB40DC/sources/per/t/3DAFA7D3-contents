@@ -1,5 +1,4 @@
 #Given a series of observations and set of changepoints, trim them in the event of seasonality or trends.
-#library(caTools)
 
 getPiecewiseRMSE <- function(series, changepoint, trendsOnly=F, seasonalityOnly=F, numHarmonics=2){
   #Retrieve the best piecewise RMSE based on looking for trends and/or seasonality
@@ -45,6 +44,9 @@ getHarmonicRMSE <- function(series, numHarmonics=2){
 
   x <- 1:length(series)
 
+  #General description of spectral analysis/periodogram
+  #http://www.ams.sunysb.edu/~zhu/ams586/Periodogram.pdf
+
   #Fit model with first two harmonics
   #https://stats.stackexchange.com/questions/60500/how-to-find-a-good-fit-for-semi-sinusoidal-model-in-r
   #https://stats.stackexchange.com/questions/60994/fit-a-sinusoidal-term-to-data
@@ -86,7 +88,19 @@ getHarmonicRMSE <- function(series, numHarmonics=2){
 #   return(sqrt(mean(resid(fitHarmonic)^2)))
 # }
 
-trimLinearTrends <- function(series, changepoints, threshold=1.25){
+trimLinearTrends <- function(series, changepoints, threshold=1.15){
+  if(threshold < 1){
+    stop("The trimming threshold should be no smaller than 1.")
+  }
+
+  if(length(series) < 1){
+    stop("The series must be a vector containing at least 1 observation.")
+  }
+
+  if(length(changepoints) < 1){
+    stop("The changepoints must be in a vector and there must be at least 1 changepoint.")
+  }
+
   #Include 0 and n as endpoints.
   changepoints <- unique(c(0, changepoints, length(series)))
 
@@ -120,7 +134,19 @@ trimLinearTrends <- function(series, changepoints, threshold=1.25){
 }
 
 
-trimSeasonality <- function(series, changepoints, threshold=1.25, numHarmonics=2){
+trimSeasonality <- function(series, changepoints, threshold=1.15, numHarmonics=2){
+  if(threshold < 1){
+    stop("The trimming threshold should be no smaller than 1.")
+  }
+
+  if(length(series) < 1){
+    stop("The series must be a vector containing at least 1 observation.")
+  }
+
+  if(length(changepoints) < 1){
+    stop("The changepoints must be in a vector and there must be at least 1 changepoint.")
+  }
+
   #Include 0 and n as endpoints.
   changepoints <- unique(c(0, changepoints, length(series)))
 
@@ -154,7 +180,7 @@ trimSeasonality <- function(series, changepoints, threshold=1.25, numHarmonics=2
 }
 
 
-# trimTrendedSeasonality <- function(series, changepoints, threshold=1.25, numHarmonics=2){
+# trimTrendedSeasonality <- function(series, changepoints, threshold=1.15, numHarmonics=2){
 #   #Include 0 and n as endpoints.
 #   changepoints <- unique(c(0, changepoints, length(series)))
 #
@@ -189,7 +215,19 @@ trimSeasonality <- function(series, changepoints, threshold=1.25, numHarmonics=2
 
 
 
-trimTrendsAndSeasonality <- function(series, changepoints, thresholdLinear=1.25, thresholdSeasonal=1.25, numHarmonics=2){
+trimLinearTrendsAndSeasonality <- function(series, changepoints, thresholdLinear=1.15, thresholdSeasonal=1.15, numHarmonics=2){
+  if((thresholdLinear < 1) | (thresholdSeasonal < 1)){
+    stop("The trimming threshold should be no smaller than 1.")
+  }
+
+  if(length(series) < 1){
+    stop("The series must be a vector containing at least 1 observation.")
+  }
+
+  if(length(changepoints) < 1){
+    stop("The changepoints must be in a vector and there must be at least 1 changepoint.")
+  }
+
   #Include 0 and n as endpoints.
   changepoints <- unique(c(0, changepoints, length(series)))
 
@@ -223,7 +261,6 @@ trimTrendsAndSeasonality <- function(series, changepoints, thresholdLinear=1.25,
     # else{
     #   segLengths <- diff(changepoints)
     #   thresholds <- 1 + dynamicMultiplier*runmin(segLengths,k=2)/runmax(segLengths,k=2)
-    #   thresholds <- thresholds[2:length(thresholds)] #First threshold is an artifact from the calculations.
     #
     #   #Once no ratio of RMSEs is below a threshold, stop.
     #   if(all(ratios > thresholds)){
@@ -243,3 +280,24 @@ trimTrendsAndSeasonality <- function(series, changepoints, thresholdLinear=1.25,
   }
   return(c())
 }
+
+#Helper functions for trimTrendsAndSeasonality if using dynamic trimming
+# runmin <- function(values, window){
+#   mins <- rep(NA, length(values)-window+1)
+#
+#   for(i in 1:(length(values)-window+1)){
+#     mins[i] <- min(values[i:(i+window-1)])
+#   }
+#
+#   return(mins)
+# }
+#
+# runmax <- function(values, window){
+#   maxes <- rep(NA, length(values)-window+1)
+#
+#   for(i in 1:(length(values)-window+1)){
+#     maxes[i] <- max(values[i:(i+window-1)])
+#   }
+#
+#   return(maxes)
+# }

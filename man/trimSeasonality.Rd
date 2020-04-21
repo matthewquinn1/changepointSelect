@@ -8,7 +8,7 @@ Trim proposed changepoints arising from seasonality
 Removes proposed changepoints that appear to be false positives due to seasonality or cyclical patterns.}
 
 \usage{
-trimSeasonality(series, changepoints, threshold=1.25, numHarmonics=2)
+trimSeasonality(series, changepoints, threshold=1.15, numHarmonics=2)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -38,14 +38,15 @@ Returns a vector of changepoints that are retained. This will be the subset of t
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+#Obtain changepoints for the simulated data. 10000 simulation trials may take some time.
+simChangepoints <- getOptimalChangepoints(series=simSeries, alpha=0.01, numTrials=10000, serial=F, numCores = 2)
 
-## The function is currently defined as
-function (x)
-{
-  }
+#Trim changepoints for seasonality
+simChangepointsTrimmed <- trimSeasonality(series=simSeries, changepoints=simChangepoints, threshold=1.2)
+
+#Plot
+plot(y=simSeries, x=1:length(simSeries), type="l", ylab="Simulated Value", xlab="Index", main="Simulated Data with Trimmed Changepoints")
+abline(v=simChangepointsTrimmed, col="red")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

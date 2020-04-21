@@ -17,7 +17,7 @@ getOptimalChangepoints(series, alpha=0.01, adjustAlpha=F, numTrials=10000, seria
 
 }
 \details{
-This function does not consider the possibility that false positives could arise due to trends or seasonality. Therefore, it is strongly recommended that the results from this function are trimmed for false positives. It is recommended to use the \code{\link{trimTrendsAndSeasonality}} function.}
+This function does not consider the possibility that false positives could arise due to trends or seasonality. Therefore, it is strongly recommended that the results from this function are trimmed for false positives. It is recommended to use the \code{\link{trimLinearTrendsAndSeasonality}} function.}
 \value{
 Returns a vector of changepoints. A changepoint is located immediately prior to a shift in the series.
 }
@@ -34,18 +34,14 @@ Returns a vector of changepoints. A changepoint is located immediately prior to 
 \seealso{
 \code{\link{trimLinearTrends}}
 \code{\link{trimSeasonality}}
-\code{\link{trimTrendsAndSeasonality}}
+\code{\link{trimLinearTrendsAndSeasonality}}
 }
 
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+#Obtain changepoints for the simulated data. 10000 simulation trials may take some time.
+simChangepoints <- getOptimalChangepoints(series=simSeries, alpha=0.01, numTrials=10000, serial=F, numCores = 2)
 
-## The function is currently defined as
-function (x)
-{
-  }
+#Must then go on to trim changepoints.
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

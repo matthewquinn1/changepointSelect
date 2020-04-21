@@ -1,6 +1,3 @@
-#library(changepoint)
-#library(doParallel)
-
 #Find the log-likelihood for a vector of observations given a vector of changepoints.
 getLogLik <- function(series, changepoints, means=NA, sds=NA, segLengths=NA){
   changepoints <- unique(c(0, changepoints, length(series)))
@@ -102,6 +99,17 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, ser
 
 #Given a vector of observations, returns the optimal set of changepoints based on a significance level.
 getOptimalChangepoints <- function(series, alpha=0.01, adjustAlpha=F, numTrials=10000, serial=T, numCores=NA){
+  if(length(series) < 1){
+    stop("The series must be a vector containing at least 1 observation.")
+  }
+
+  if(alpha < 0){
+    stop("alpha must be nonnegative.")
+  }
+
+  if(numTrials < 1){
+    stop("numTrials must be positive.")
+  }
 
   #Make cluster if running in parallel.
   if(!serial){

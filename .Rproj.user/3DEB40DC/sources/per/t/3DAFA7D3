@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "2631876450",
+    "hash" : "1129884641",
     "id" : "3DAFA7D3",
-    "lastKnownWriteTime" : 1586054437,
-    "last_content_update" : 1586054437435,
+    "lastKnownWriteTime" : 1587433166,
+    "last_content_update" : 1587433166566,
     "path" : "C:/Matt Work/Harvard/Mobile Health Project/R Package/changepointSelect/R/Trimming.R",
     "project_path" : "R/Trimming.R",
     "properties" : {
-        "cursorPosition" : "1,1",
-        "scrollLine" : "0"
+        "cursorPosition" : "153,34",
+        "scrollLine" : "151"
     },
     "read_only" : false,
     "read_only_alternatives" : [
