@@ -13,7 +13,7 @@ We will not be discussing technical details behind the methods here. For those d
 
 ### Installing
 
-To install a package from GitHub, you should make sure that you have the ``devtools`` package installed. The following will install it if it is not already.
+To install a package from GitHub, you should make sure that you have the ``devtools`` package installed. The following will install and load it as necessary.
 
 ```r
 if(!require("devtools")){
