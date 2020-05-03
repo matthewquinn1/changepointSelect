@@ -66,13 +66,13 @@ In this particular case, the trimming works very well. We are left with the corr
 Rebecca Killick, Paul Fearnhead, and Idris Eckley. Optimal detection of changepoints with a linear computationalcost. *Journal of the American Statistical Association*, 107(500):1590–1598, 2012.
 
 <a id="2">[2]</a> 
-Kaylea Haynes, Idris A. Eckley, and Paul Fearnhead. Computationally efficient changepoint detection for a rangeof penalties.Journal of Computational and Graphical Statistics, 26(1):134–143, 2017
+Kaylea Haynes, Idris A. Eckley, and Paul Fearnhead. Computationally efficient changepoint detection for a range of penalties. *Journal of Computational and Graphical Statistics*, 26(1):134–143, 2017
 
 <a id="3">[3]</a> 
 ASCEPT paper in progress.
 
 <a id="4">[4]</a> 
-Arlene Chung, David Gotz, Michael Kappelman, Luca Mentch, Kimberly Glass, and Nils Gehlenborg. PrecisionVISSTA: Enabling Precision Medicine through the Development of Quantitative and Visualization Methods.http://precisionvissta.web.unc.edu/. Accessed: 2020-3-14.
+Arlene Chung, David Gotz, Michael Kappelman, Luca Mentch, Kimberly Glass, and Nils Gehlenborg. Precision VISSTA: Enabling Precision Medicine through the Development of Quantitative and Visualization Methods. http://precisionvissta.web.unc.edu/. Accessed: 2020-3-14.
 
 ## License
 
