@@ -1,15 +1,15 @@
 # Automated Selection of Changepoints using Empirical P-values and Trimming (ASCEPT)
 
-When presented with a time series, an investigator may find sudden changes in how the observations are distributed. These shifts occur at at what are called "changepoints" and often need to be identified before further analysis. One of the most popular changepoint detection algorithms is Pruned Exact Linear Time (PELT), which performs an optimization over possible sets of changepoints fit to the data, penalizing for including more and more changepoints. Changepoints for a Range of Penalties (CROPS) helps by efficiently running PELT for many different penalty values. However, an investigator may need to look through many different results from running CROPS on PELT to find a "best fit" for their data.
+When presented with a time series, an investigator may find sudden changes in how the observations are distributed. These shifts occur at at what are called "changepoints" and often need to be identified before further analysis. One of the most popular changepoint detection algorithms is Pruned Exact Linear Time (PELT) [[1]](#1), which performs an optimization over possible sets of changepoints fit to the data, penalizing for including more and more changepoints. Changepoints for a Range of Penalties (CROPS) [[2]](#2) helps by efficiently running PELT for many different penalty values. However, an investigator may need to look through many different results from running CROPS on PELT to find a "best fit" for their data.
 
-Automated Selection of Changepoints using Empirical P-values and Trimming (ASCEPT) makes this process easier by selecting changepoints from PELT based on their statistical significance in improving a model fit to the data. It then allows the user to trim the set of changepoints of false positives that may arise due to linear trends or seasonality in the data.
+Automated Selection of Changepoints using Empirical P-values and Trimming (ASCEPT) [[3]](#3) makes this process easier by selecting changepoints from PELT based on their statistical significance in improving a model fit to the data. It then allows the user to trim the set of changepoints of false positives that may arise due to linear trends or seasonality in the data.
 
 
 ## Getting Started
 
 These instructions will walk the user through installing and using ASCEPT in ``R``. ASCEPT is implemented in the ``changepointSelect`` package, available at <https://github.com/matthewquinn1/changepointSelect>.
 
-We will not be discussing technical details behind the methods here. For those details, please refer to the paper for ASCEPT **cite paper**.
+We will not be discussing technical details behind the methods here. For those details, please refer to the paper for ASCEPT [[3]](#3). The paper also presents the results from running ASCEPT on a number of variables from the Precision VISSTA mobile health study [[4]](#4).
 
 ### Installing
 
@@ -61,6 +61,18 @@ In this particular case, the trimming works very well. We are left with the corr
 
 * **Matthew Quinn** -  <mjq522@g.harvard.edu>
 
+## References
+<a id="1">[1]</a> 
+Rebecca Killick, Paul Fearnhead, and Idris Eckley. Optimal detection of changepoints with a linear computationalcost. *Journal of the American Statistical Association*, 107(500):1590–1598, 2012.
+
+<a id="2">[2]</a> 
+Kaylea Haynes, Idris A. Eckley, and Paul Fearnhead. Computationally efficient changepoint detection for a rangeof penalties.Journal of Computational and Graphical Statistics, 26(1):134–143, 2017
+
+<a id="3">[3]</a> 
+ASCEPT paper in progress.
+
+<a id="4">[4]</a> 
+Arlene Chung, David Gotz, Michael Kappelman, Luca Mentch, Kimberly Glass, and Nils Gehlenborg. PrecisionVISSTA: Enabling Precision Medicine through the Development of Quantitative and Visualization Methods.http://precisionvissta.web.unc.edu/. Accessed: 2020-3-14.
 
 ## License
 
