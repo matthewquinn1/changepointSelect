@@ -37,7 +37,7 @@ Returns a vector of changepoints that are retained. This will be the subset of t
 }
 \examples{
 #Obtain changepoints for the simulated data. 10000 simulation trials may take some time.
-simChangepoints <- getOptimalChangepoints(series=simSeries, alpha=0.01, numTrials=10000, serial=F, numCores = 2)
+simChangepoints <- getChangepoints(series=simSeries, alpha=0.01, numTrials=10000, serial=F, numCores = 2)
 
 #Trim changepoints for linear trends
 simChangepointsTrimmed <- trimLinearTrends(series=simSeries, changepoints=simChangepoints, threshold=1.2)

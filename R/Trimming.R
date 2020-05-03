@@ -281,6 +281,36 @@ trimLinearTrendsAndSeasonality <- function(series, changepoints, thresholdLinear
   return(c())
 }
 
+
+#Wrapper for other trimming functions
+trimChangepoints <- function(series, changepoints, thresholdLinear=1.15, thresholdSeasonal=1.15, numHarmonics=2){
+  if((thresholdLinear <= 1) & (thresholdSeasonal <= 1)){
+    stop("Both trimming thresholds are no more than 1. No trimming done.")
+  }
+  if(length(series) < 1){
+    stop("The series must be a vector containing at least 1 observation.")
+  }
+  if(length(changepoints) < 1){
+    stop("The changepoints must be in a vector and there must be at least 1 changepoint.")
+  }
+
+  #Call other trimming functions
+  if((thresholdLinear > 1) & (thresholdSeasonal > 1)){
+    message("Trimming for both linear trends and seasonality.")
+    return(trimLinearTrendsAndSeasonality(series, changepoints, thresholdLinear, thresholdSeasonal, numHarmonics))
+  }
+
+  if((thresholdLinear > 1) & (thresholdSeasonal <= 1)){
+    message("Trimming for linear trends only.")
+    return(trimLinearTrends(series, changepoints, thresholdLinear))
+  }
+
+  if((thresholdLinear <= 1) & (thresholdSeasonal > 1)){
+    message("Trimming for seasonality only.")
+    return(trimSeasonality(series, changepoints, thresholdSeasonal, numHarmonics))
+  }
+}
+
 #Helper functions for trimTrendsAndSeasonality if using dynamic trimming
 # runmin <- function(values, window){
 #   mins <- rep(NA, length(values)-window+1)

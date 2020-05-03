@@ -1,10 +1,10 @@
-\name{getOptimalChangepoints}
-\alias{getOptimalChangepoints}
+\name{getChangepoints}
+\alias{getChangepoints}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Find the optimal set of changepoints}
+\title{Find the optimal set of changepoints based on a significance level}
 \description{Considers results from running CROPS on PELT in order to assess which set of changepoints is the best. Does so using an empirical p-value process. It is \strong{strongly recommended} that the results from this process are then trimmed for linear trends and/or seasonlity.}
 \usage{
-getOptimalChangepoints(series, alpha=0.01, adjustAlpha=F, numTrials=10000, serial=T, numCores=NA)
+getChangepoints(series, alpha=0.01, adjustAlpha=F, numTrials=10000, serial=T, numCores=NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -39,7 +39,7 @@ Returns a vector of changepoints. A changepoint is located immediately prior to 
 
 \examples{
 #Obtain changepoints for the simulated data. 10000 simulation trials may take some time.
-simChangepoints <- getOptimalChangepoints(series=simSeries, alpha=0.01, numTrials=10000, serial=F, numCores = 2)
+simChangepoints <- getChangepoints(series=simSeries, alpha=0.01, numTrials=10000, serial=F, numCores = 2)
 
 #Must then go on to trim changepoints.
 }

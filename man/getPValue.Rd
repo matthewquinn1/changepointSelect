@@ -17,7 +17,7 @@ getPValue(series, changepoints1, changepoints2, numTrials=10000, serial=T)
   \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel will offer only a modest speed-up for short series and/or for relatively small numbers of simulations.}
 }
 \details{
-This function is called by \code{\link{getOptimalChangepoints}}. If running in parallel, the number of cores to use is set by \code{\link{getOptimalChangepoints}}, which sets up the cluster.}
+This function is called by \code{\link{getChangepoints}}. If running in parallel, the number of cores to use is set by \code{\link{getChangepoints}}, which sets up the cluster.}
 \value{
 Returns the empirical p-value (a numeric value between 0 and 1 inclusive).
 }
@@ -32,7 +32,7 @@ Returns the empirical p-value (a numeric value between 0 and 1 inclusive).
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{getOptimalChangepoints}}
+\code{\link{getChangepoints}}
 }
 \examples{
 
