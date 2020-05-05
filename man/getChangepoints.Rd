@@ -4,7 +4,7 @@
 \title{Find the optimal set of changepoints based on a significance level}
 \description{Considers results from running CROPS on PELT in order to assess which set of changepoints is the best. Does so using an empirical p-value process. It is \strong{strongly recommended} that the results from this process are then trimmed for linear trends and/or seasonlity.}
 \usage{
-getChangepoints(series, alpha=0.01, adjustAlpha=F, numTrials=10000, serial=T, numCores=NA)
+getChangepoints(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
