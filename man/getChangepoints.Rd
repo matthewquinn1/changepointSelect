@@ -10,9 +10,8 @@ getChangepoints(series, alpha=0.01, adjustAlpha=F, numTrials=10000, serial=T, nu
 \arguments{
   \item{series}{A vector of observations on which to run changepoint analysis.}
   \item{alpha}{The significance level to use. Typical values include 0.01, 0.05, and 0.10.}
-  \item{adjustAlpha}{If TRUE, uses a bonferroni correction for alpha in order to adjust for the number of new changepoints being assessed. It is currently recommended not to use this adjustment, keeping this FALSE.}
   \item{numTrials}{The number of simulations to use in order to obtain an empirical p-value. Recommended to at least be several thousand.}
-  \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel will offer only a modest speed-up for short series.}
+  \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel will offer only a modest speed-up for short series or when \code{numTrials} is relatively small.}
     \item{numCores}{The number of cores to use if serial=F. If not specified, then it will be taken as max(1, detectCores()-1).}
 
 }

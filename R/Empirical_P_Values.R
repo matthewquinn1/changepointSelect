@@ -98,7 +98,7 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, ser
 
 
 #Given a vector of observations, returns the optimal set of changepoints based on a significance level.
-getChangepoints <- function(series, alpha=0.01, adjustAlpha=F, numTrials=10000, serial=T, numCores=NA){
+getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA){
   if(length(series) < 1){
     stop("The series must be a vector containing at least 1 observation.")
   }
@@ -130,18 +130,9 @@ getChangepoints <- function(series, alpha=0.01, adjustAlpha=F, numTrials=10000, 
   #Start at end of "results", corresponding to no changepoints. Iterate backwards, including more changepoints.
   index = length(results)
 
-  if(adjustAlpha){
-    while(pValue < (alpha)/(length(results[[index - 1]]) - length(results[[index]])) && index > 1){
-      pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials, serial=serial)
-      index <- index - 1
-    }
-  }
-
-  else{
-    while(pValue < alpha && index > 1){
-      pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials, serial=serial)
-      index <- index - 1
-    }
+  while((pValue < alpha) & (index > 1)){
+    pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials, serial=serial)
+    index <- index - 1
   }
 
   if(!serial){
