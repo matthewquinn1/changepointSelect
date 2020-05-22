@@ -60,6 +60,7 @@ In this particular case, the trimming works very well. We are left with the corr
 ## Authors
 
 * **Matthew Quinn** -  <mjq522@g.harvard.edu>
+* **Kimberly Glass** -  <kimberly.glass@channing.harvard.edu>
 
 ## References
 <a id="1">[1]</a> 
