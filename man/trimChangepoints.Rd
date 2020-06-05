@@ -34,9 +34,7 @@ Returns a vector of changepoints that are retained. This will be the subset of t
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{trimLinearTrends}}
-\code{\link{trimSeasonality}}
-\code{\link{trimLinearTrendsAndSeasonality}}
+\code{\link{getChangepoints}}
 }
 \examples{
 #Obtain changepoints for the simulated data. 10000 simulation trials may take some time.

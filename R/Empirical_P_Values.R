@@ -98,7 +98,7 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, ser
 
 
 #Given a vector of observations, returns the optimal set of changepoints based on a significance level.
-getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA){
+getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA, verbose=T){
   if(length(series) < 1){
     stop("The series must be a vector containing at least 1 observation.")
   }
@@ -120,19 +120,31 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
       cl <- makeCluster(max(1, numCores))
     }
     registerDoParallel(cl)
-    clusterExport(cl, list("generateSample", "getLogLik"))
+    #clusterExport(cl, list("generateSample", "getLogLik"))
   }
 
   #Run CROPS on PELT to detect changepoints based on changes in mean.
-  results <- cpt.mean(series, penalty="CROPS", pen.value=c(0, 10e12), method="PELT", test.stat="Normal", class=F, minseglen=1)$changepoints
+  #capture.output prevents progress messages that are printed by running CROPS.
+  capture.output(results <- cpt.mean(series, penalty="CROPS", pen.value=c(0, 10e12), method="PELT", test.stat="Normal", class=F, minseglen=1)$changepoints)
   pValue <- 0
 
   #Start at end of "results", corresponding to no changepoints. Iterate backwards, including more changepoints.
-  index = length(results)
+  maxIndex <- length(results)
+  index <- maxIndex
 
   while((pValue < alpha) & (index > 1)){
     pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials, serial=serial)
     index <- index - 1
+
+    if(verbose){
+      if(pValue < alpha){
+        message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value:", pValue))
+      }
+      else{
+        message(paste("Changepoint set", maxIndex - index, "insignificant with empirical p-value:", pValue))
+      }
+    }
+
   }
 
   if(!serial){

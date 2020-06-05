@@ -4,7 +4,7 @@
 \title{Find the optimal set of changepoints based on a significance level}
 \description{Considers results from running CROPS on PELT in order to assess which set of changepoints is the best. Does so using an empirical p-value process. It is \strong{strongly recommended} that the results from this process are then trimmed for linear trends and/or seasonlity.}
 \usage{
-getChangepoints(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA)
+getChangepoints(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA, verbose=T)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -12,7 +12,8 @@ getChangepoints(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA)
   \item{alpha}{The significance level to use. Typical values include 0.01, 0.05, and 0.10.}
   \item{numTrials}{The number of simulations to use in order to obtain an empirical p-value. Recommended to at least be several thousand.}
   \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel will offer only a modest speed-up for short series or when \code{numTrials} is relatively small.}
-    \item{numCores}{The number of cores to use if serial=F. If not specified, then it will be taken as max(1, detectCores()-1).}
+    \item{numCores}{The number of cores to use if serial=F. If not specified, then it will be taken as \code{max(1, detectCores()-1)}.}
+    \item{verbose}{If TRUE, prints out messages indicating progress.}
 
 }
 \details{
@@ -31,9 +32,7 @@ Returns a vector of changepoints. A changepoint is located immediately prior to 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{trimLinearTrends}}
-\code{\link{trimSeasonality}}
-\code{\link{trimLinearTrendsAndSeasonality}}
+\code{\link{trimChangepoints}}
 }
 
 \examples{
