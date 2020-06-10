@@ -98,7 +98,7 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, ser
 
 
 #Given a vector of observations, returns the optimal set of changepoints based on a significance level.
-getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA, verbose=T){
+getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA, minPenalty=0, maxPenalty=10e12, verbose=T){
   if(length(series) < 1){
     stop("The series must be a vector containing at least 1 observation.")
   }
@@ -125,11 +125,15 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
 
   #Run CROPS on PELT to detect changepoints based on changes in mean.
   #capture.output prevents progress messages that are printed by running CROPS.
-  capture.output(results <- cpt.mean(series, penalty="CROPS", pen.value=c(0, 10e12), method="PELT", test.stat="Normal", class=F, minseglen=1)$changepoints)
+  capture.output(results <- cpt.mean(series, penalty="CROPS", pen.value=c(minPenalty, maxPenalty), method="PELT", test.stat="Normal", class=F, minseglen=1)$changepoints)
   pValue <- 0
 
   #Start at end of "results", corresponding to no changepoints. Iterate backwards, including more changepoints.
   maxIndex <- length(results)
+  if(maxIndex == 1){
+    stop("Only one set of changepoints found. Please try decreasing minPenalty towards 0 and/or increasing maxPenalty.")
+  }
+
   index <- maxIndex
 
   while((pValue < alpha) & (index > 1)){
@@ -138,7 +142,12 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
 
     if(verbose){
       if(pValue < alpha){
-        message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value:", pValue))
+        if(pValue == 0){
+          message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value below:", 1/numTrials))
+        }
+        else{
+          message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value:", pValue))
+        }
       }
       else{
         message(paste("Changepoint set", maxIndex - index, "insignificant with empirical p-value:", pValue))

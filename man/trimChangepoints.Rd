@@ -8,7 +8,7 @@ Trim proposed changepoints arising from linear trends or seasonality
 Wrapper function that will call \code{\link{trimLinearTrends}}, \code{\link{trimSeasonality}}, or \code{\link{trimLinearTrendsAndSeasonality}} to remove proposed changepoints that appear to be false positives due to linear trends and/or seasonality.
 }
 \usage{
-trimChangepoints(series, changepoints, thresholdLinear=1.15, thresholdSeasonal=1.15, numHarmonics=2)
+trimChangepoints(series, changepoints, thresholdLinear=1.15, thresholdSeasonal=1.15, numHarmonics=2, verbose=T)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,6 +17,7 @@ trimChangepoints(series, changepoints, thresholdLinear=1.15, thresholdSeasonal=1
   \item{thresholdLinear}{Parameter for determining when to trim changepoints based on linear trends. If the ratio of the linear regression RMSE to the optimal piecewise RMSE is below this threshold, then the changepoint is subject to removal. That is, a larger threshold makes it easier to remove proposed changepoints. Reasonable values may be between 1 and 1.5, but will depend on the context. It is worthwhile for the investigator to try multiple values for the threshold. It is recommended to use the same threshold as for thresholdSeasonal. If this parameter is less than or equal to 1, then trimming for linear trends is not performed.}
     \item{thresholdSeasonal}{Parameter for determining when to trim changepoints based on seasonality. If the ratio of the harmonic regression RMSE to the optimal piecewise RMSE is below this threshold, then the changepoint is subject to removal. That is, a larger threshold makes it easier to remove proposed changepoints. Reasonable values may be between 1 and 1.5, but will depend on the context. It is worthwhile for the investigator to try multiple values for the threshold. It is recommended to use the same value as used for thresholdLinear. If this parameter is less than or equal to 1, then trimming for seasonality is not performed.}
   \item{numHarmonics}{Indicates the number of harmonics to be modeled when assessing seasonality (currently restricted to being 1 or 2).}
+  \item{verbose}{If TRUE, prints out message indicating status.}
 }
 \details{In order to trim changepoints for both linear trends and seasonality, \code{thresholdLinear} and \code{thresholdSeaonal} must both be larger than 1. If  \code{thresholdLinear > 1} and  \code{thresholdSeasonal <= 1}, then the changepoints will only be trimmed for linear trends. If  \code{thresholdLinear <= 1} and  \code{thresholdSeasonal > 1}, then the changepoints will only be trimmed for seasonality. However, it is generally recommended to trim for both linear trends and seasonality.
 }
