@@ -19,7 +19,7 @@ getChangepoints(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA,  min
 
 }
 \details{
-This function does not consider the possibility that false positives could arise due to trends or seasonality. Therefore, it is strongly recommended that the results from this function are trimmed for false positives. It is recommended to use the \code{\link{trimLinearTrendsAndSeasonality}} function.}
+This function does not consider the possibility that false positives could arise due to trends or seasonality. Therefore, it is strongly recommended that the results from this function are trimmed for false positives. It is recommended to use the \code{\link{trimChangepoints}} function.}
 \value{
 Returns a vector of changepoints. A changepoint is located immediately prior to a shift in the series.
 }
