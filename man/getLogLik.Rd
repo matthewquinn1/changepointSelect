@@ -10,7 +10,7 @@ getLogLik(series, changepoints, means=NA, sds=NA, segLengths=NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{series}{A vector of observations on which to run changepoint analysis.}
+  \item{series}{A vector of observations on which to run changepoint analysis. This vector must not contain any missing values.}
   \item{changepoints}{A vector indicating the indices at which there are changepoints. A changepoint is located immediately prior to a shift in the series.}
   \item{means}{A optional vector where each entry corresponds to the mean of a segment.}
   \item{sds}{A optional vector where each entry corresponds to the standard deviation of a segment.}

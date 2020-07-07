@@ -1,5 +1,10 @@
 #Find the log-likelihood for a vector of observations given a vector of changepoints.
 getLogLik <- function(series, changepoints, means=NA, sds=NA, segLengths=NA){
+
+  if(any(is.na(series)) | any(is.na(changepoints))){
+    stop("NAs cannot be present when trying to find the log-likelihood in this package. Changepoint detection isn't appropriate in the presence of missing values.")
+  }
+
   changepoints <- unique(c(0, changepoints, length(series)))
 
 
@@ -9,11 +14,13 @@ getLogLik <- function(series, changepoints, means=NA, sds=NA, segLengths=NA){
     #Record the means and sds associated with each segment
     means <- sds <- segLengths <- rep(NA, length(changepoints) - 1)
 
+    #The mean() and sd() functions are avoided to reduce runtime by not performing error checks.
+    #They are therefore written out manually below.
     for(i in 1:(length(changepoints)-1)){
       subSeries <- series[(changepoints[i]+1):changepoints[i+1]]
-      means[i] <- mean(subSeries, na.rm=T)
-      sds[i] <- sd(subSeries, na.rm=T)
       segLengths[i] <- changepoints[i+1] - changepoints[i]
+      means[i] <- sum(subSeries)/segLengths[i] #mean(subSeries)
+      sds[i] <- sqrt((1/(segLengths[i]-1))*sum((subSeries - means[i])^2)) #sd(subSeries)
     }
   }
 
@@ -21,9 +28,13 @@ getLogLik <- function(series, changepoints, means=NA, sds=NA, segLengths=NA){
   meansVec <- rep(means, times=segLengths)
   sdsVec <- rep(sds, times=segLengths)
 
-  #Get the logLikelihood of the entire series, ignoring segments that only have constant segments (i.e. sd is NA)
-  nonConstants <- which(!is.na(sdsVec) & sdsVec != 0)
-  logLik <- sum(dnorm(series[nonConstants], mean=meansVec[nonConstants], sd=sdsVec[nonConstants], log=T))
+  #Get the logLikelihood of the entire series, ignoring segments that only have one observation (i.e. sd is NA) or are constant (i.e. sd = 0).
+  moreThanOne <- (!is.na(sdsVec) & sdsVec != 0)
+
+  #dnorm() is avoided to reduce runtime by not performing error checks.
+  #It is therfefore written out manually below.
+  #logLik <- sum(dnorm(series[moreThanOne], mean=meansVec[moreThanOne], sd=sdsVec[moreThanOne], log=T))
+  logLik <- sum(-(1/2)*log(2*pi) - (1/2)*log(sdsVec[moreThanOne]^2) - (1/(2*sdsVec[moreThanOne]^2))*((series[moreThanOne] - meansVec[moreThanOne])^2))
 
   return(logLik)
 }
@@ -45,6 +56,10 @@ generateSample <- function(means, sds, segLengths){
 #Get empirical p-value for the osberved improvement in fit when segmenting by the
 #two different sets of changepoints.
 getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, serial=T){
+  if(any(is.na(series))){
+    stop("NAs cannot be present when trying to find the empirical p-value in this package. Changepoint detection isn't appropriate in the presence of missing values.")
+  }
+
   #Record the means and sds and segments lengths associated with each segment.
   means1 <- sds1 <- segLengths1 <-  rep(NA, length(changepoints1) + 1)
   means2 <- sds2 <- segLengths2 <- rep(NA, length(changepoints2) + 1)
@@ -93,12 +108,16 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, ser
     }
   }
 
-  return(sum(obsDiff < nullDiffs)/numTrials)
+  return(sum(nullDiffs >= obsDiff)/numTrials)
 }
 
 
 #Given a vector of observations, returns the optimal set of changepoints based on a significance level.
 getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA, minPenalty=0, maxPenalty=10e12, verbose=T){
+  if(any(is.na(series))){
+    stop("Changepoint detection isn't appropriate in the presence of missing values. The series cannot have any NAs.")
+  }
+
   if(length(series) < 1){
     stop("The series must be a vector containing at least 1 observation.")
   }
@@ -137,7 +156,7 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
   index <- maxIndex
 
   while((pValue < alpha) & (index > 1)){
-    pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials, serial=serial)
+    pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials = numTrials, serial = serial)
     index <- index - 1
 
     if(verbose){

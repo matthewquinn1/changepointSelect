@@ -8,10 +8,10 @@ getChangepoints(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA,  min
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{series}{A vector of observations on which to run changepoint analysis.}
+  \item{series}{A vector of observations on which to run changepoint analysis. This vector must not contain any missing values.}
   \item{alpha}{The significance level to use. Typical values include 0.01, 0.05, and 0.10.}
-  \item{numTrials}{The number of simulations to use in order to obtain an empirical p-value. Recommended to at least 1,000.}
-  \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel will offer only a modest speed-up for short series or when \code{numTrials} is relatively small.}
+  \item{numTrials}{The number of simulations to use in order to obtain an empirical p-value. Recommended to be at least several thousand.}
+  \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel generally will not benefit runtime unless \code{numTrials} is very large (e.g. >= 100,000).}
     \item{numCores}{The number of cores to use if serial=F. If not specified, then it will be taken as \code{max(1, detectCores()-1)}.}
     \item{minPenalty}{The minimum penalty to be used when running CROPS on PELT. This corresponds to the first of two values fed to the \code{pen.value} argument in \code{\link[changepoint]{cpt.mean}}. It is suggested to keep this set to 0.}
     \item{maxPenalty}{The maximum penalty to be used when running CROPS on PELT. This corresponds to the second of two values fed to the \code{pen.value} argument in \code{\link[changepoint]{cpt.mean}}. This can be made arbitrarily large with relatively little impact on runtime. It is important that this value is large enough that no changepoints are identified under such a penalty in PELT. In rare cases, it might be necessary to increase this beyond the default value in order to get valid results.}
@@ -19,7 +19,9 @@ getChangepoints(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA,  min
 
 }
 \details{
-This function does not consider the possibility that false positives could arise due to trends or seasonality. Therefore, it is strongly recommended that the results from this function are trimmed for false positives. It is recommended to use the \code{\link{trimChangepoints}} function.}
+This function does not consider the possibility that false positives could arise due to trends or seasonality. Therefore, it is strongly recommended that the results from this function are trimmed for false positives. It is recommended to use the \code{\link{trimChangepoints}} function.
+
+Also note that the \code{series} can not contain any missing values. It is not appropriate to run this changepoint analysis on segments with missing data ("gaps").}
 \value{
 Returns a vector of changepoints. A changepoint is located immediately prior to a shift in the series.
 }

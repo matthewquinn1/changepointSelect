@@ -10,11 +10,11 @@ getPValue(series, changepoints1, changepoints2, numTrials=10000, serial=T)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{series}{A vector of observations on which to run changepoint analysis.}
+  \item{series}{A vector of observations on which to run changepoint analysis. This vector must not contain any missing values.}
   \item{changepoints1}{The initial vector of changepoints. A changepoint is located immediately prior to a shift in the series.}
   \item{changepoints2}{A vector of changepoints to assess the significance of, relative to the initial vector.}
   \item{numTrials}{The number of simulations to use in order to obtain an empirical p-value. Recommended to at least be several thousand.}
-  \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel will offer only a modest speed-up for short series and/or for relatively small numbers of simulations.}
+  \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel generally will not benefit runtime unless \code{numTrials} is very large (e.g. >= 100,000).}
 }
 \details{
 This function is called by \code{\link{getChangepoints}}. If running in parallel, the number of cores to use is set by \code{\link{getChangepoints}}, which sets up the cluster.}
