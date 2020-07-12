@@ -55,7 +55,7 @@ generateSample <- function(means, sds, segLengths){
 #Takes in a vector of observations, first vector of changepoints, second vector of changepoints
 #Get empirical p-value for the osberved improvement in fit when segmenting by the
 #two different sets of changepoints.
-getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, serial=T){
+getPValue <- function(series, changepoints1, changepoints2, numTrials=10000){
   if(any(is.na(series))){
     stop("NAs cannot be present when trying to find the empirical p-value in this package. Changepoint detection isn't appropriate in the presence of missing values.")
   }
@@ -93,20 +93,20 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000, ser
   #Generate differences under the null (i.e. the additional changepoints in changepoints2 are not true changepoints).
   nullDiffs <- rep(NA, numTrials)
 
-  #If serial processing is requested, run serial. Otherwise, get empirical null distribution in parallel.
-  if(serial){
-    for(i in 1:numTrials){
-      randomSamp <- generateSample(means=means1, sds=sds1, segLengths = segLengths1)
-      nullDiffs[i] <- getLogLik(randomSamp, changepoints2) - getLogLik(randomSamp, changepoints1)
-    }
+  #if(serial){
+  for(i in 1:numTrials){
+    randomSamp <- generateSample(means=means1, sds=sds1, segLengths = segLengths1)
+    nullDiffs[i] <- getLogLik(randomSamp, changepoints2) - getLogLik(randomSamp, changepoints1)
   }
+  #}
 
-  else{
-    nullDiffs <- foreach(i=1:numTrials, .combine=c) %dopar% {
-      randomSamp <- generateSample(means=means1, sds=sds1, segLengths = segLengths1)
-      getLogLik(randomSamp, changepoints2) - getLogLik(randomSamp, changepoints1)
-    }
-  }
+  #Formerly used for parallelism, but no longer used.
+  #else{
+  #  nullDiffs <- foreach(i=1:numTrials, .combine=c) %dopar% {
+  #    randomSamp <- generateSample(means=means1, sds=sds1, segLengths = segLengths1)
+  #    getLogLik(randomSamp, changepoints2) - getLogLik(randomSamp, changepoints1)
+  #  }
+  #}
 
   return(sum(nullDiffs >= obsDiff)/numTrials)
 }
@@ -155,29 +155,122 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
 
   index <- maxIndex
 
-  while((pValue < alpha) & (index > 1)){
-    pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials = numTrials, serial = serial)
-    index <- index - 1
+  #Run p-value assessments in serial if requested.
+  if(serial){
+    while((pValue < alpha) & (index > 1)){
+      pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials = numTrials)
+      index <- index - 1
 
-    if(verbose){
-      if(pValue < alpha){
-        if(pValue == 0){
-          message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value below:", 1/numTrials))
+      if(verbose){
+        if(pValue < alpha){
+          if(pValue == 0){
+            message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value below:", 1/numTrials))
+          }
+          else{
+            message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value:", pValue))
+          }
         }
         else{
-          message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value:", pValue))
+          message(paste("Changepoint set", maxIndex - index, "insignificant with empirical p-value:", pValue))
         }
       }
-      else{
-        message(paste("Changepoint set", maxIndex - index, "insignificant with empirical p-value:", pValue))
-      }
+
     }
 
+    #If the last set of changepoints is reached without finding an insignificant result, return the last significant result.
+    if((pValue < alpha) & (index == 1)){
+      if(verbose){
+        message("No insignificant set of changepoints considered by PELT. Returning last significant set as final result.")
+      }
+      return(results[[index]])
+    }
+
+    return(results[[index+1]])
   }
 
-  if(!serial){
+  #Run p-value assessments in parallel if requested. Will likely do excessive computation since the stopping point
+  #can't be predicted, but should generally still be faster than running in serial.
+  else{
+    #Track the indices of which set of changepoints should be assessed for significance
+    indices <- maxIndex:(maxIndex-numCores+1)
+
+    pValues <- rep(0, length(indices))
+
+    #Get results in parallel for next group of sets of changepoints.
+    while((max(pValues) < alpha) & (min(indices) > 1)){
+      pValues <- foreach(i=indices, .combine=c, .packages = "changepointSelect") %dopar% {
+        getPValue(series, changepoints1 = results[[i]], changepoints2 = results[[i - 1]], numTrials = numTrials)
+      }
+
+      if(verbose){
+        for(i in 1:length(indices)){
+          if(pValues[i] < alpha){
+            if(pValues[i] == 0){
+              message(paste("Changepoint set", maxIndex - indices[i] + 1, "significant with empirical p-value below:", 1/numTrials))
+            }
+            else{
+              message(paste("Changepoint set", maxIndex - indices[i] + 1, "significant with empirical p-value:", pValues[i]))
+            }
+          }
+          else{
+            message(paste("Changepoint set", maxIndex - indices[i] + 1, "insignificant with empirical p-value:", pValues[i]))
+            break
+          }
+        }
+      }
+
+      #Decrement the indices associated with the sets of changepoints
+      indices <- indices - numCores
+    }
+
     stopCluster(cl)
+
+    #Record which set of changepoints is the first to be insignificant, if such occurs
+    if(max(pValues) >= alpha){
+      index <- indices[min(which(pValues >= alpha))] + numCores
+      return(results[[index]])
+    }
+
+
+    #Handle the last batch of sets of changepoints if necessary (i.e. sets of changepoints are assessed in groups of size equal to numCores,
+    #so if the last few sets of changepoints are reached it may be that numCores is larger than the number of
+    #remaining sets). This just runs the last few sets in serial.
+    if((max(pValues) < alpha) &  (min(indices) <= 1)){
+      index <- indices[1]
+      pValue <- 0
+
+      while((pValue < alpha) & (index > 1)){
+        pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials = numTrials)
+        index <- index - 1
+
+        if(verbose){
+          if(pValue < alpha){
+            if(pValue == 0){
+              message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value below:", 1/numTrials))
+            }
+            else{
+              message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value:", pValue))
+            }
+          }
+          else{
+            message(paste("Changepoint set", maxIndex - index, "insignificant with empirical p-value:", pValue))
+          }
+        }
+
+      }
+
+      #If the last set of changepoints is reached without finding an insignificant result, return the last significant result.
+      if((pValue < alpha) & (index == 1)){
+        if(verbose){
+          message("No insignificant set of changepoints considered by PELT. Returning last significant set as final result.")
+        }
+        return(results[[index]])
+      }
+
+    }
+
+
+    return(results[[index+1]])
   }
 
-  return(results[[index+1]])
 }

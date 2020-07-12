@@ -6,7 +6,7 @@ Get the empirical p-value for a new set of changepoints}
 \description{
 Obtains the p-value associated with introducing new changepoints beyond those already present for a series of observations.}
 \usage{
-getPValue(series, changepoints1, changepoints2, numTrials=10000, serial=T)
+getPValue(series, changepoints1, changepoints2, numTrials=10000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -14,10 +14,9 @@ getPValue(series, changepoints1, changepoints2, numTrials=10000, serial=T)
   \item{changepoints1}{The initial vector of changepoints. A changepoint is located immediately prior to a shift in the series.}
   \item{changepoints2}{A vector of changepoints to assess the significance of, relative to the initial vector.}
   \item{numTrials}{The number of simulations to use in order to obtain an empirical p-value. Recommended to at least be several thousand.}
-  \item{serial}{Boolean indicating whether to run this function in serial or in parallel. Running in parallel generally will not benefit runtime unless \code{numTrials} is very large (e.g. >= 100,000).}
-}
+  }
 \details{
-This function is called by \code{\link{getChangepoints}}. If running in parallel, the number of cores to use is set by \code{\link{getChangepoints}}, which sets up the cluster.}
+This function is called by \code{\link{getChangepoints}}.}
 \value{
 Returns the empirical p-value (a numeric value between 0 and 1 inclusive).
 }
