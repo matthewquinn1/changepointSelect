@@ -35,7 +35,7 @@ Having installed and loaded the ``changepointSelect`` package, we can now run AS
 
 ![Figure 1](man/figures/Sim_results1.png "Simulated Data")
 
-We notice major mean-shifts in the observations at indices 49, 60, 600, 699, and 700 (note that a changepoint is defined to be the point immediately before the shift occurs). Additionally, there is a linear trend from indices 200 to 400 and seasonality from 400 to 600. Let us run the first stage of ASCEPT, which selects changepoints from running CROPS on PELT based on a Monte Carlo experiment and a significance level. In this case, we use 10,000 simulations, or trials, and a significance level of 0.01. We run this in parallel using 2 cors. Note that the simulated data is loaded in as ``simSeries`` when loading the package.
+We notice major mean-shifts in the observations at indices 49, 60, 600, 699, and 700 (note that a changepoint is defined to be the point immediately before the shift occurs). Additionally, there is a linear trend from indices 200 to 400 and seasonality from 400 to 600. Let us run the first stage of ASCEPT, which selects changepoints from running CROPS on PELT based on a Monte Carlo experiment and a significance level. In this case, we use 10,000 simulations, or trials, and a significance level of 0.01. Note that the simulated data is loaded in as ``simSeries`` when loading the package. We run this command in parallel using 2 cores. In general, we recommend running in parallel using, on the order of, 2-4 cores. This should often provide a substantial speedup over serial computation.
 
 ```r
 simChangepoints <- getChangepoints(series=simSeries, alpha=0.01, numTrials=10000, serial=F, numCores = 2)

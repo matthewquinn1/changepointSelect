@@ -193,14 +193,27 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
   else{
     #Track the indices of which set of changepoints should be assessed for significance
     indices <- maxIndex:(maxIndex-numCores+1)
-
     pValues <- rep(0, length(indices))
 
     #Get results in parallel for next group of sets of changepoints.
-    while((max(pValues) < alpha) & (min(indices) > 1)){
-      pValues <- foreach(i=indices, .combine=c, .packages = "changepointSelect") %dopar% {
-        getPValue(series, changepoints1 = results[[i]], changepoints2 = results[[i - 1]], numTrials = numTrials)
+    while((max(pValues) < alpha) & (max(indices) > 1)){
+
+      #Handle whether or not indices goes below 1.
+      if(min(indices) > 1){
+        pValues <- foreach(i=indices, .combine=c, .packages = "changepointSelect") %dopar% {
+          getPValue(series, changepoints1 = results[[i]], changepoints2 = results[[i - 1]], numTrials = numTrials)
+        }
       }
+
+      else{
+        indices <- indices[1]:2
+        pValues <- rep(0, length(indices))
+
+        pValues <- foreach(i=indices, .combine=c, .packages = "changepointSelect") %dopar% {
+          getPValue(series, changepoints1 = results[[i]], changepoints2 = results[[i - 1]], numTrials = numTrials)
+        }
+      }
+
 
       if(verbose){
         for(i in 1:length(indices)){
@@ -223,54 +236,23 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
       indices <- indices - numCores
     }
 
-    stopCluster(cl)
-
     #Record which set of changepoints is the first to be insignificant, if such occurs
     if(max(pValues) >= alpha){
       index <- indices[min(which(pValues >= alpha))] + numCores
+      stopCluster(cl)
       return(results[[index]])
     }
 
 
-    #Handle the last batch of sets of changepoints if necessary (i.e. sets of changepoints are assessed in groups of size equal to numCores,
-    #so if the last few sets of changepoints are reached it may be that numCores is larger than the number of
-    #remaining sets). This just runs the last few sets in serial.
-    if((max(pValues) < alpha) &  (min(indices) <= 1)){
-      index <- indices[1]
-      pValue <- 0
-
-      while((pValue < alpha) & (index > 1)){
-        pValue <- getPValue(series, changepoints1 = results[[index]], changepoints2 = results[[index - 1]], numTrials = numTrials)
-        index <- index - 1
-
-        if(verbose){
-          if(pValue < alpha){
-            if(pValue == 0){
-              message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value below:", 1/numTrials))
-            }
-            else{
-              message(paste("Changepoint set", maxIndex - index, "significant with empirical p-value:", pValue))
-            }
-          }
-          else{
-            message(paste("Changepoint set", maxIndex - index, "insignificant with empirical p-value:", pValue))
-          }
-        }
-
+    #If the last set of changepoints is reached without finding an insignificant result, return the last significant result.
+    else{
+      if(verbose){
+        message("No insignificant set of changepoints considered by PELT. Returning last significant set as final result.")
       }
-
-      #If the last set of changepoints is reached without finding an insignificant result, return the last significant result.
-      if((pValue < alpha) & (index == 1)){
-        if(verbose){
-          message("No insignificant set of changepoints considered by PELT. Returning last significant set as final result.")
-        }
-        return(results[[index]])
-      }
-
+      stopCluster(cl)
+      return(results[[indices[length(indices)] + numCores - 1]])
     }
 
-
-    return(results[[index+1]])
   }
 
 }

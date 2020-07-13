@@ -245,7 +245,15 @@ trimLinearTrendsAndSeasonality <- function(series, changepoints, thresholdLinear
 
     ratiosLinear <- linearResults/piecewiseResults
     ratiosSeasonal <- seasonalResults/piecewiseResults
+
+    #Sometimes multiple fits may be perfect (namely for very short segments). If piecewise is perfect, automatically set
+    #ratio to be Inf in case a ratio is actually 0/0, yielding NaN.
+    perfect <- which(piecewiseResults == 0)
+    ratiosLinear[perfect] <- Inf
+    ratiosSeasonal[perfect] <- Inf
+
     ratios <- pmin(ratiosLinear, ratiosSeasonal) #Take smallest ratio across linear trends and seasonality
+
 
 
     #Once no linear RMSE or harmonic RMSE is less than threshold times that for piecewise functions, stop.
