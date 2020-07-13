@@ -199,19 +199,13 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
     while((max(pValues) < alpha) & (max(indices) > 1)){
 
       #Handle whether or not indices goes below 1.
-      if(min(indices) > 1){
-        pValues <- foreach(i=indices, .combine=c, .packages = "changepointSelect") %dopar% {
-          getPValue(series, changepoints1 = results[[i]], changepoints2 = results[[i - 1]], numTrials = numTrials)
-        }
-      }
-
-      else{
+      if(min(indices) <= 1){
         indices <- indices[1]:2
         pValues <- rep(0, length(indices))
+      }
 
-        pValues <- foreach(i=indices, .combine=c, .packages = "changepointSelect") %dopar% {
-          getPValue(series, changepoints1 = results[[i]], changepoints2 = results[[i - 1]], numTrials = numTrials)
-        }
+      pValues <- foreach(i=indices, .combine=c, .packages = "changepointSelect") %dopar% {
+        getPValue(series, changepoints1 = results[[i]], changepoints2 = results[[i - 1]], numTrials = numTrials)
       }
 
 
