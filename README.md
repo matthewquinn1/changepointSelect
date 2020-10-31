@@ -9,7 +9,7 @@ Automated Selection of Changepoints using Empirical P-values and Trimming (ASCEP
 
 These instructions will walk the user through installing and using ASCEPT in ``R``. ASCEPT is implemented in the ``changepointSelect`` package, available at <https://github.com/matthewquinn1/changepointSelect>.
 
-We will not be discussing technical details behind the methods here. For those details, please refer to the paper for ASCEPT [[3]](#3), a draft of which is available [here](vignettes/vignettes/Automated_Selection_of_Changepoints_using_Empirical_P_values_and_Trimming_ASCEPT.pdf). The paper also presents the results from running ASCEPT on a number of variables from the Precision VISSTA mobile health study [[4]](#4).
+We will not be discussing technical details behind the methods here. For those details, please refer to the paper for ASCEPT [[3]](#3), a draft of which is available [here](vignettes/Automated_Selection_of_Changepoints_using_Empirical_P_values_and_Trimming_ASCEPT.pdf). The paper also presents the results from running ASCEPT on a number of variables from the Precision VISSTA mobile health study [[4]](#4).
 
 ### Installing
 
