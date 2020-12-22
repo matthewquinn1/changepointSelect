@@ -26,22 +26,24 @@ getPiecewiseRMSE <- function(series, changepoint, trendsOnly=F, seasonalityOnly=
   return(sqrt((1/length(series))*(changepoint*RMSE1^2 + (length(series)-changepoint)*RMSE2^2)))
 }
 
+getLinearFit <- function(series){
+  x <- 1:length(series)
+
+  linearFit <- lm(series ~ x)
+  return(linearFit)
+}
+
 getLinearRMSE <- function(series){
   if(length(series) < 3){
     return(0)
   }
 
-  x <- 1:length(series)
+  linearFit <- getLinearFit(series)
 
-  fitLinear <- lm(series ~ x)
-  return(sqrt(mean(resid(fitLinear)^2)))
+  return(sqrt(mean(resid(linearFit)^2)))
 }
 
-getHarmonicRMSE <- function(series, numHarmonics=2){
-  if(length(series) < 3){
-    return(0)
-  }
-
+getHarmonicFit <- function(series, numHarmonics=2){
   x <- 1:length(series)
 
   #General description of spectral analysis/periodogram
@@ -54,13 +56,24 @@ getHarmonicRMSE <- function(series, numHarmonics=2){
   per <- 1/ssp$freq[ssp$spec==max(ssp$spec)][1]
 
   if(numHarmonics==1){
-    fitHarmonic <- lm(series~ sin(2*pi*x/per)+cos(2*pi*x/per))
+    harmonicFit <- lm(series~ sin(2*pi*x/per)+cos(2*pi*x/per))
   }
 
   else{
-    fitHarmonic <- lm(series~ sin(2*pi*x/per)+cos(2*pi*x/per) + sin(4*pi*x/per)+cos(4*pi*x/per))
+    harmonicFit <- lm(series~ sin(2*pi*x/per)+cos(2*pi*x/per) + sin(4*pi*x/per)+cos(4*pi*x/per))
   }
-  return(sqrt(mean(resid(fitHarmonic)^2)))
+
+  return(harmonicFit)
+}
+
+getHarmonicRMSE <- function(series, numHarmonics=2){
+  if(length(series) < (2+numHarmonics*2)){
+    return(0)
+  }
+
+  harmonicFit <- getHarmonicFit(series, numHarmonics)
+
+  return(sqrt(mean(resid(harmonicFit)^2)))
 }
 
 # getTrendedHarmonicRMSE <- function(series, numHarmonics=2){
@@ -78,14 +91,14 @@ getHarmonicRMSE <- function(series, numHarmonics=2){
 #
 #
 #   if(numHarmonics==1){
-#     fitHarmonic <- lm(series~ x + sin(2*pi*x/per)+cos(2*pi*x/per))
+#     harmonicFit <- lm(series~ x + sin(2*pi*x/per)+cos(2*pi*x/per))
 #   }
 #
 #   else{
-#     fitHarmonic <- lm(series~x + sin(2*pi*x/per)+cos(2*pi*x/per) + sin(4*pi*x/per)+cos(4*pi*x/per))
+#     harmonicFit <- lm(series~x + sin(2*pi*x/per)+cos(2*pi*x/per) + sin(4*pi*x/per)+cos(4*pi*x/per))
 #   }
 #
-#   return(sqrt(mean(resid(fitHarmonic)^2)))
+#   return(sqrt(mean(resid(harmonicFit)^2)))
 # }
 
 trimLinearTrends <- function(series, changepoints, threshold=1.15){

@@ -123,11 +123,11 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
   }
 
   if(alpha < 0){
-    stop("alpha must be nonnegative.")
+    stop("The significance level, alpha, must be a nonnegative value (e.g. 0.01, 0.05, 0.1, etc).")
   }
 
   if(numTrials < 1){
-    stop("numTrials must be positive.")
+    stop("numTrials must be a positive integer.")
   }
 
   #Make cluster if running in parallel.
