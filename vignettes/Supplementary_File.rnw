@@ -1,0 +1,7 @@
+\documentclass{article}
+\usepackage{pdfpages}
+%\VignetteIndexEntry{MatthewQuinn2020Supplementary_File}
+
+\begin{document}
+\includepdf[pages=-, fitpaper=true]{Supplementary_File.pdf}
+\end{document}

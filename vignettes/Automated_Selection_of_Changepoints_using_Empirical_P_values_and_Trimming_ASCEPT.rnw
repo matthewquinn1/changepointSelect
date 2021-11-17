@@ -1,7 +1,0 @@
-\documentclass{article}
-\usepackage{pdfpages}
-%\VignetteIndexEntry{MatthewQuinn2020Automated_Selection_of_Changepoints_using_Empirical_P_values_and_Trimming_ASCEPT}
-
-\begin{document}
-\includepdf[pages=-, fitpaper=true]{Automated_Selection_of_Changepoints_using_Empirical_P_values_and_Trimming_ASCEPT.pdf}
-\end{document}

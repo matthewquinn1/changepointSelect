@@ -1,0 +1,7 @@
+\documentclass{article}
+\usepackage{pdfpages}
+%\VignetteIndexEntry{MatthewQuinn2020ASCEPT_Manuscript}
+
+\begin{document}
+\includepdf[pages=-, fitpaper=true]{ASCEPT_Manuscript.pdf}
+\end{document}
