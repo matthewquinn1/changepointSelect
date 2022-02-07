@@ -60,13 +60,53 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000){
     stop("NAs cannot be present when trying to find the empirical p-value in this package. Changepoint detection isn't appropriate in the presence of missing values.")
   }
 
-  #Record the means and sds and segments lengths associated with each segment.
-  means1 <- sds1 <- segLengths1 <-  rep(NA, length(changepoints1) + 1)
-  means2 <- sds2 <- segLengths2 <- rep(NA, length(changepoints2) + 1)
+  #Check if the previous changepoints are strictly a subset of the new changepoints
+  previousAreSubset <- all(changepoints1 %in% changepoints2)
 
   #Include first and last observations as changepoints.
   changepoints1 <- unique(c(0, changepoints1, length(series)))
   changepoints2 <- unique(c(0, changepoints2, length(series)))
+
+  #If previous changepoints are a subset of the new ones, only simulate segments
+  #neighboring the new changepoints for getting the p-value (saves on computation).
+  #Else, simulate all segments.
+  if(previousAreSubset){
+    #Grab the segments to the left and right of each new changepoint.
+    newChangepointIndices <- which(!(changepoints2 %in% changepoints1))
+
+    #Subset the series only to the pertinent segments
+    #Some computation is purposefully allowed to be redundant. Redundancies could be avoided by
+    #checking which segments neighbor one another in the original series, but this would also complicate
+    #the code substantially.
+    pertinentSeries <- rep(NA, length(series))
+    shiftedChangepoints1 <- shiftedChangepoints2 <- c(0)
+    for(k in 1:length(newChangepointIndices)){
+      changeIndex <- newChangepointIndices[k]
+
+      #Record segment left of changepoint, record shifted changepoint
+      pertinentSeries[(changepoints2[changeIndex-1]+1):changepoints2[changeIndex]] <- series[(changepoints2[changeIndex-1]+1):changepoints2[changeIndex]]
+      shiftedNewChangepoint <- sum(!is.na(pertinentSeries))
+      shiftedChangepoints2 <- c(shiftedChangepoints2, shiftedNewChangepoint)
+
+      #Record segment right of changepoint, record shifted changepoint
+      pertinentSeries[(changepoints2[changeIndex]+1):changepoints2[changeIndex+1]] <- series[(changepoints2[changeIndex]+1):changepoints2[changeIndex+1]]
+      shiftedNewChangepoint <- sum(!is.na(pertinentSeries))
+      shiftedChangepoints2 <- c(shiftedChangepoints2, shiftedNewChangepoint)
+      if(changepoints2[changeIndex+1] %in% changepoints1){
+        shiftedChangepoints1 <- c(shiftedChangepoints1, shiftedNewChangepoint)
+      }
+    }
+
+    #Redefine the original series as its pertinent segments and
+    #redefine the changepoints accordingly
+    series <- pertinentSeries[which(!is.na(pertinentSeries))]
+    changepoints1 <- sort(unique(c(0, shiftedChangepoints1, length(series))))
+    changepoints2 <- sort(unique(c(0, shiftedChangepoints2, length(series))))
+  }
+
+  #Record the means and sds and segments lengths associated with each segment.
+  means1 <- sds1 <- segLengths1 <-  rep(NA, length(changepoints1) - 1)
+  means2 <- sds2 <- segLengths2 <- rep(NA, length(changepoints2) - 1)
 
   #Get the means, standard deviations, and segment lengths under the first set of changepoints.
   for(i in 1:(length(changepoints1)-1)){
@@ -85,7 +125,6 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000){
   #In the case of segments with constant values, replace missing sd with 0.
   sds1[which(is.na(sds1))] <- 0
   sds2[which(is.na(sds2))] <- 0
-
 
   #Record the observed change in the log-likelihood.
   obsDiff <- getLogLik(series, changepoints2, means2, sds2, segLengths2) - getLogLik(series, changepoints1, means1, sds1, segLengths1)
