@@ -53,7 +53,7 @@ generateSample <- function(means, sds, segLengths){
 
 
 #Takes in a vector of observations, first vector of changepoints, second vector of changepoints
-#Get empirical p-value for the osberved improvement in fit when segmenting by the
+#Get empirical p-value for the observed improvement in fit when segmenting by the
 #two different sets of changepoints.
 getPValue <- function(series, changepoints1, changepoints2, numTrials=10000){
   if(any(is.na(series))){

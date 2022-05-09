@@ -130,6 +130,11 @@ trimLinearTrends <- function(series, changepoints, threshold=1.15){
 
     ratios <- linearResults/piecewiseResults
 
+    #Sometimes multiple fits may be perfect (namely for very short segments). If piecewise is perfect, automatically set
+    #ratio to be Inf in case a ratio is actually 0/0, yielding NaN.
+    perfect <- which(piecewiseResults == 0)
+    ratios[perfect] <- Inf
+
     #Once no linear RMSE is less than threshold times that for piecewise functions, stop.
     if(min(ratios) > threshold){
       return(changepoints[2:(length(changepoints)-1)])
@@ -175,6 +180,11 @@ trimSeasonality <- function(series, changepoints, threshold=1.15, numHarmonics=2
     }
 
     ratios <- seasonalResults/piecewiseResults
+
+    #Sometimes multiple fits may be perfect (namely for very short segments). If piecewise is perfect, automatically set
+    #ratio to be Inf in case a ratio is actually 0/0, yielding NaN.
+    perfect <- which(piecewiseResults == 0)
+    ratios[perfect] <- Inf
 
     #Once no harmonic RMSE is less than threshold times that for piecewise functions, stop.
     if(min(ratios) > threshold){
