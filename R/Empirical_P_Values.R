@@ -9,7 +9,7 @@ getLogLik <- function(series, changepoints, means=NA, sds=NA, segLengths=NA){
 
 
   #If means and sds for each segment are not already given, find them.
-  if(is.na(means) || is.na(sds) || is.na(segLengths)){
+  if(any(is.na(means)) | any(is.na(sds)) | any(is.na(segLengths))){
 
     #Record the means and sds associated with each segment
     means <- sds <- segLengths <- rep(NA, length(changepoints) - 1)
@@ -29,7 +29,7 @@ getLogLik <- function(series, changepoints, means=NA, sds=NA, segLengths=NA){
   sdsVec <- rep(sds, times=segLengths)
 
   #Get the logLikelihood of the entire series, ignoring segments that only have one observation (i.e. sd is NA) or are constant (i.e. sd = 0).
-  moreThanOne <- (!is.na(sdsVec) & sdsVec != 0)
+  moreThanOne <- (!is.na(sdsVec) & (sdsVec != 0))
 
   #dnorm() is avoided to reduce runtime by not performing error checks.
   #It is therfefore written out manually below.
