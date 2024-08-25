@@ -152,7 +152,7 @@ getPValue <- function(series, changepoints1, changepoints2, numTrials=10000){
 
 
 #Given a vector of observations, returns the optimal set of changepoints based on a significance level.
-getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA, minPenalty=0, maxPenalty=10e12, verbose=T){
+getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCores=NA, minPenalty=0, maxPenalty=10e12, minSegmentLength=1, verbose=T){
   if(any(is.na(series))){
     stop("Changepoint detection isn't appropriate in the presence of missing values. The series cannot have any NAs.")
   }
@@ -183,7 +183,7 @@ getChangepoints <- function(series, alpha=0.01, numTrials=10000, serial=T, numCo
 
   #Run CROPS on PELT to detect changepoints based on changes in mean.
   #capture.output prevents progress messages that are printed by running CROPS.
-  capture.output(results <- cpt.mean(series, penalty="CROPS", pen.value=c(minPenalty, maxPenalty), method="PELT", test.stat="Normal", class=F, minseglen=1)$changepoints)
+  capture.output(results <- cpt.mean(series, penalty="CROPS", pen.value=c(minPenalty, maxPenalty), method="PELT", test.stat="Normal", class=F, minseglen=minSegmentLength)$changepoints)
   pValue <- 0
 
   #Start at end of "results", corresponding to no changepoints. Iterate backwards, including more changepoints.
